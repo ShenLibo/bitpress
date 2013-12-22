@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block title %}Archive{% endblock %}
+{% block content %}
+  <h1>Index</h1>
+  <table class="table">
+  	{% for post in posts %}
+  	<tr class="post">
+  		<td>
+  			<a href="/admin/edit/{{post.title}}">{{post.title}}</a>
+  		</td>
+  		<td class="post-content">{{post.content}}</td>
+  	</tr>
+  	{% endfor %}
+  </table>
+  
+{% endblock %}
