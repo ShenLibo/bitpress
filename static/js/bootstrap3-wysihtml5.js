@@ -122,6 +122,40 @@
                 "<li><div class='wysihtml5-colors' data-wysihtml5-command-value='orange'></div><a class='wysihtml5-colors-title' data-wysihtml5-command='foreColor' data-wysihtml5-command-value='orange'>" + locale.colours.orange + "</a></li>" +
                 "</ul>" +
                 "</li>";
+        },
+        "post": function(locale, options) {
+            var size = (options && options.size) ? ' btn-'+options.size : '';
+            return "<div class='btn-group'>" +
+                "<button type='button' class='post-save btn btn-default btn-" + size + "' tabindex='-1'>" + locale.post.save+ "</button>"+
+                "<button type='button' class='btn btn-default btn-" + size + " dropdown-toggle' data-toggle='dropdown' tabindex='-1'>"+
+                "<span class='caret'></span>" +
+                "<span class='sr-only'>Toggle Dropdown</span>" +
+                "</button>"+
+                "<ul class='dropdown-menu' role='menu'>"+
+                "<li><a href='javascript:;' tabindex='-1' class='post-save'>" + locale.post.save + "</a></li>"+
+                "<li><a href='javascript:;' tabindex='-1' class='post-publish'>"+ locale.post.publish +"</a></li>"+
+                "<li class='divider' tabindex='-1'></li>"+
+                "<li><a href='javascript:;' tabindex='-1' class='post-remove'>" + locale.post.remove+ "</a></li>"+
+                "</ul>"+
+                "</div>"
+            return "<li class='dropdown'>" +
+                "<a class='btn dropdown-toggle btn-" + size + " btn-default' data-toggle='dropdown' href='#' tabindex='-1'>" +
+                "<span class='current-color'>" + locale.colours.black + "</span>&nbsp;<b class='caret'></b>" +
+                "</a>" +
+                "<ul class='dropdown-menu'>" +
+                "<li><div class='wysihtml5-colors' data-wysihtml5-command-value='black'></div><a class='wysihtml5-colors-title' data-wysihtml5-command='foreColor' data-wysihtml5-command-value='black'>" + locale.colours.black + "</a></li>" +
+                "<li><div class='wysihtml5-colors' data-wysihtml5-command-value='silver'></div><a class='wysihtml5-colors-title' data-wysihtml5-command='foreColor' data-wysihtml5-command-value='silver'>" + locale.colours.silver + "</a></li>" +
+                "<li><div class='wysihtml5-colors' data-wysihtml5-command-value='gray'></div><a class='wysihtml5-colors-title' data-wysihtml5-command='foreColor' data-wysihtml5-command-value='gray'>" + locale.colours.gray + "</a></li>" +
+                "<li><div class='wysihtml5-colors' data-wysihtml5-command-value='maroon'></div><a class='wysihtml5-colors-title' data-wysihtml5-command='foreColor' data-wysihtml5-command-value='maroon'>" + locale.colours.maroon + "</a></li>" +
+                "<li><div class='wysihtml5-colors' data-wysihtml5-command-value='red'></div><a class='wysihtml5-colors-title' data-wysihtml5-command='foreColor' data-wysihtml5-command-value='red'>" + locale.colours.red + "</a></li>" +
+                "<li><div class='wysihtml5-colors' data-wysihtml5-command-value='purple'></div><a class='wysihtml5-colors-title' data-wysihtml5-command='foreColor' data-wysihtml5-command-value='purple'>" + locale.colours.purple + "</a></li>" +
+                "<li><div class='wysihtml5-colors' data-wysihtml5-command-value='green'></div><a class='wysihtml5-colors-title' data-wysihtml5-command='foreColor' data-wysihtml5-command-value='green'>" + locale.colours.green + "</a></li>" +
+                "<li><div class='wysihtml5-colors' data-wysihtml5-command-value='olive'></div><a class='wysihtml5-colors-title' data-wysihtml5-command='foreColor' data-wysihtml5-command-value='olive'>" + locale.colours.olive + "</a></li>" +
+                "<li><div class='wysihtml5-colors' data-wysihtml5-command-value='navy'></div><a class='wysihtml5-colors-title' data-wysihtml5-command='foreColor' data-wysihtml5-command-value='navy'>" + locale.colours.navy + "</a></li>" +
+                "<li><div class='wysihtml5-colors' data-wysihtml5-command-value='blue'></div><a class='wysihtml5-colors-title' data-wysihtml5-command='foreColor' data-wysihtml5-command-value='blue'>" + locale.colours.blue + "</a></li>" +
+                "<li><div class='wysihtml5-colors' data-wysihtml5-command-value='orange'></div><a class='wysihtml5-colors-title' data-wysihtml5-command='foreColor' data-wysihtml5-command-value='orange'>" + locale.colours.orange + "</a></li>" +
+                "</ul>" +
+                "</li>";
         }
     };
 
@@ -395,12 +429,13 @@
 
     var defaultOptions = $.fn.wysihtml5.defaultOptions = {
         "font-styles": true,
-        "color": false,
+        "color": true,
         "emphasis": true,
         "lists": true,
         "html": false,
         "link": true,
         "image": true,
+        "post": true,
         "size": 'sm',
         events: {},
         parserRules: {
@@ -460,7 +495,7 @@
                 "pre": 1
             }
         },
-        stylesheets: ["./css/bootstrap3-wysiwyg5-color.css"], // (path_to_project/lib/css/bootstrap3-wysiwyg5-color.css)
+        stylesheets: ["/static/css/bootstrap3-wysiwyg5-color.css"], // (path_to_project/lib/css/bootstrap3-wysiwyg5-color.css)
         locale: "en"
     };
 
@@ -514,6 +549,11 @@
                 navy: "Navy",
                 blue: "Blue",
                 orange: "Orange"
+            },
+            post: {
+                publish: "Publish",
+                save: "Save",
+                remove: "Remove"
             }
         }
     };
