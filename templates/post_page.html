@@ -1,8 +1,21 @@
 {% extends "layout.html" %}
 {% block title %}{{post.title}}{% endblock %}
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="/static/css/highlightjs/xcode.css">
+{% endblock %}
 {% block content %}
   <div class="post">
   	<h2>{{post.title}}</h2>
   	<div class="post-content">{{post.content|safe}}</div>
   </div>
+{% endblock %}
+{% block script %}
+  {{ super() }}
+  <script src="/static/js/highlight.pack.js"></script>
+  <script>
+    $(document).ready(function() {
+      $('pre').each(function(i, e) {hljs.highlightBlock(e)});
+    });
+  </script>
 {% endblock %}

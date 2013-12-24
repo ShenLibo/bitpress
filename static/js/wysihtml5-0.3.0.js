@@ -7626,6 +7626,22 @@ wysihtml5.Commands = Base.extend(
     }
   };
 })(wysihtml5);(function(wysihtml5) {
+  var undef;
+  
+  wysihtml5.commands.code = {
+    exec: function(composer, command) {
+      return wysihtml5.commands.formatInline.exec(composer, command, "pre");
+    },
+
+    state: function(composer, command, color) {
+      return wysihtml5.commands.formatInline.state(composer, command, "pre");
+    },
+
+    value: function() {
+      return undef;
+    }
+  };
+})(wysihtml5);(function(wysihtml5) {
   var undef,
       CLASS_NAME  = "wysiwyg-text-align-center",
       REG_EXP     = /wysiwyg-text-align-[a-z]+/g;
