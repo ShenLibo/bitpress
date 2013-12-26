@@ -9,6 +9,7 @@
 	<style>
     body {
       background-color: #CCC;
+      border: none;
     }
     .block {
     	margin-top: 10px;
@@ -35,7 +36,7 @@
 				</div>
 
 				<div class="row block">
-	        <textarea id="editor-textarea" class="textarea form-control" placeholder="Enter text ..." style="width: 100%; height: 500px">{{post.content}}</textarea>
+	        <textarea id="editor-textarea" class="textarea " placeholder="Enter text ..." style="background-color: rgb(255, 255, 255); border-collapse: separate; border: 1px solid rgb(204, 204, 204); clear: none; display: block; float: none; margin: 0px; outline: rgb(85, 85, 85) none 0px; outline-offset: 0px; padding: 6px 12px; position: static; top: auto; left: auto; right: auto; bottom: auto; z-index: auto; vertical-align: middle; text-align: start; -webkit-box-shadow: rgba(0, 0, 0, 0.0745098) 0px 1px 1px 0px inset; box-shadow: rgba(0, 0, 0, 0.0745098) 0px 1px 1px 0px inset; border-top-right-radius: 4px; border-bottom-right-radius: 4px; border-bottom-left-radius: 4px; border-top-left-radius: 4px; width: 100%; height: 500px;">{{post.content}}</textarea>
 				</div>
 
 			</div>
@@ -55,6 +56,7 @@
 	<script src="/static/js/highlight.pack.js"></script>
 
 	<script>
+	var post_id = "{{post.post_id}}";
 	function warning(type, message){
 		$(".alert-list").prepend("<div class='alert alert-"+type+" alert-dismissable block'>"+
 				  "<button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>"+
@@ -67,11 +69,16 @@
 		if(title!=""){
 			$.ajax({
 				type:"POST",
-				data:{title:title, content: $('#editor-textarea').val()},
+				data:{title:title, content: $('#editor-textarea').val(), post_id:post_id},
 				success: function (data, textStatus) {
 					data = JSON.parse(data);
 					if(data.type=="success"){
-						warning("success", "<a href='/post/"+title+"' target='_blank' class='alert-link'>发布成功！</a>")
+						if(post_id){
+							warning("success", "<a href='/post/"+post_id+"' target='_blank' class='alert-link'>更新成功！</a>")
+						}else{
+							post_id = data.post_id
+							warning("success", "<a href='/post/"+post_id+"' target='_blank' class='alert-link'>发布成功！</a>")
+						}
 					}else{
 						warning("warning", data.message)
 					}

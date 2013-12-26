@@ -6,7 +6,7 @@
   	{% for post in posts %}
   	<tr class="post">
   		<td>
-  			<a href="/admin/edit/{{post.title}}">{{post.title}}</a>
+  			<a href="/admin/edit/{% if post.post_id %}{{ post.post_id|int}}{% endif %}">{{post.title}}</a>
   		</td>
   		<td class="post-content">{{post.content}}</td>
   	</tr>

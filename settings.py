@@ -1,0 +1,3 @@
+SECRET_KEY = 'u\xfe\x88`\x9d\xaf\xbev\x0e\x0e\xbf\xec\xf6z\x17\xc1\x01b\xc7`\x15\xe0"V' #os.urandom(24)
+USERNAME = "Libo"
+PASSWORD = "close(f)"

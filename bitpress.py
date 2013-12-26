@@ -1,12 +1,22 @@
 # coding:utf8
 
-from flask import Flask, render_template,request, url_for, send_from_directory
+from flask import Flask, render_template,request, url_for, send_from_directory, session, redirect, escape
 from flask.ext.pymongo import PyMongo
 from datetime import datetime
+import settings
 import json
 import os, string, random
+from functools import wraps
 
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if g.user is None:
+            return redirect(url_for('login', next=request.url))
+        return f(*args, **kwargs)
+    return decorated_function
 app = Flask(__name__)
+app.secret_key = settings.SECRET_KEY
 mongo = PyMongo(app)
 
 # This is the path to the upload directory
@@ -22,11 +32,19 @@ def allowed_file(content_type):
 def id_generator(size=6, chars=string.ascii_uppercase + string.digits):
 	return ''.join(random.choice(chars) for x in range(size))
 
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if "username" in session:
+        	return f(*args, **kwargs)
+        return redirect(url_for('login_page', next=request.url))
+        
+    return decorated_function
 
-@app.route('/post/<path:title>')
-def post_page(title):
+@app.route('/post/<int:post_id>')
+def post_page(post_id):
 	try:
-		post = mongo.db.post.find_one({'title':title})
+		post = mongo.db.post.find_one({'post_id':post_id})
 	except Exception, e:
 		raise e
 	return render_template('post_page.html', post=post)
@@ -36,7 +54,25 @@ def archive_page():
 	posts = mongo.db.post.find().limit(100)
 	return render_template('archive_page.html', posts=posts)
 
+@app.route('/admin/login/', methods=["GET", "POST"])
+def login_page():
+	if request.method == "POST":
+		if (request.form["username"] == settings.USERNAME) and (request.form["password"] == settings.PASSWORD):
+			session["username"] = request.form["username"]
+			return "success"
+		else:
+			return "fail"
+	else: #TODO
+		return'''
+	        <form action="" method="post">
+	            <p><input type=text name=username placeholder="Username"></p>
+	            <p><input type=password name=password placeholder="Password"></p>
+	            <p><input type=submit value=Login></p>
+	        </form>
+	    '''
+
 @app.route('/admin/posts/')
+@login_required
 def admin_posts_page():
 	try:
 		posts = mongo.db.post.find()
@@ -45,30 +81,34 @@ def admin_posts_page():
 	return render_template('admin_posts_page.html', posts=posts)
 
 @app.route('/admin/edit/', methods=["GET", "POST"])
-@app.route('/admin/edit/<path:title>', methods=["GET", "POST"])
-def article_edit_page(title=""):
+@app.route('/admin/edit/<int:post_id>', methods=["GET", "POST"])
+# @app.route('/admin/edit/<path:title>', methods=["GET", "POST"])
+@login_required
+def article_edit_page(post_id=None):
 	if request.method == "POST":
-		try:
+		if((not post_id) and ("post_id" in request.form) and (request.form["post_id"]!="")):
+			post_id = int(request.form["post_id"])
+		# try:
 			# if title != request.form['title'] and mongo.db.post.find({'title':request.form['title']}):
 			# 	return json.dumps({'type':'error', 'message':'标题重复了诶'})
+		if post_id:
+			mongo.db.post.update({'post_id':post_id}, {'post_id':post_id, 'title':request.form['title'], 'content':request.form['content'],'datetime': datetime.now()})
+		else:
+			post_id = mongo.db.counter.find_and_modify(update={"$inc":{"post_id":1}}, new=True).get("post_id")
+			mongo.db.post.save({'post_id':post_id, 'title':request.form['title'], 'content':request.form['content'],'datetime': datetime.now()})
 
-			if title:
-				mongo.db.post.update({'title':title}, {'title':request.form['title'], 'content':request.form['content'],'datetime': datetime.now()})
-			else:
-				mongo.db.post.save({'title':request.form['title'], 'content':request.form['content'],'datetime': datetime.now()})
-
-		except Exception, e:
-			raise e
-		return json.dumps({'type':'success'})
+		# except Exception, e:
+		# 	raise e
+		return json.dumps({'type':'success', 'post_id': post_id})
 	else:
-		if title:
+		if post_id:
 			try:
-				post = mongo.db.post.find_one({'title':title})
+				post = mongo.db.post.find_one({'post_id':post_id})
 			except Exception, e:
 				raise e
 		else:
 			post = []
-		return render_template('article_edit_page.html', post=post, update=(title!=""))
+		return render_template('article_edit_page.html', post=post, update=(post_id!=""))
 
 @app.route('/media_upload/', methods=["POST"])
 def media_upload_api():
@@ -85,7 +125,7 @@ def media_upload_api():
 			file.save(os.path.join(directory, filename))
 		return url_for('uploaded_file',
                             filepath=("%s/%s/%s/%s" % (str(now.year), str(now.month), str(now.day), filename)) )
-	return "xx"
+	return "xx" #FIXME
 
 @app.route('/uploads/<path:filepath>')
 def uploaded_file(filepath):
