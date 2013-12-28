@@ -69,15 +69,39 @@
 		if(title!=""){
 			$.ajax({
 				type:"POST",
-				data:{title:title, content: $('#editor-textarea').val(), post_id:post_id},
+				data:{title:title, content: $('#editor-textarea').val(), post_id:post_id, type:"published"},
 				success: function (data, textStatus) {
 					data = JSON.parse(data);
 					if(data.type=="success"){
 						if(post_id){
-							warning("success", "<a href='/post/"+post_id+"' target='_blank' class='alert-link'>更新成功！</a>")
+							warning("success", "<a href='/post/"+data.post_id+"' target='_blank' class='alert-link'>更新成功！</a>")
 						}else{
 							post_id = data.post_id
-							warning("success", "<a href='/post/"+post_id+"' target='_blank' class='alert-link'>发布成功！</a>")
+							warning("success", "<a href='/post/"+data.post_id+"' target='_blank' class='alert-link'>发布成功！</a>")
+						}
+					}else{
+						warning("warning", data.message)
+					}
+				}
+			})
+		}else{
+			warning("warning", "没有写标题诶~")
+		}
+	})
+	$('.post-save').click(function(){
+		title = $('#title-input').val();
+		if(title!=""){
+			$.ajax({
+				type:"POST",
+				data:{title:title, content: $('#editor-textarea').val(), post_id:post_id, type:"draft"},
+				success: function (data, textStatus) {
+					data = JSON.parse(data);
+					if(data.type=="success"){
+						if(post_id){
+							warning("success", "<a href='/post/"+data.post_id+"' target='_blank' class='alert-link'>更新成功！</a>")
+						}else{
+							post_id = data.post_id
+							warning("success", "<a href='/post/"+data.post_id+"' target='_blank' class='alert-link'>保存成功！</a>")
 						}
 					}else{
 						warning("warning", data.message)

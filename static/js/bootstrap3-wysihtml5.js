@@ -481,7 +481,8 @@
                 "div": 1,
                 // to allow save and edit files with code tag hacks
                 "code": {},
-                "pre": {}
+                "pre": {},
+                "!---more---": {}
             }
         },
         stylesheets: ["/static/css/bootstrap.min.css","/static/css/bootstrap3-wysiwyg5-color.css"], // (path_to_project/lib/css/bootstrap3-wysiwyg5-color.css)

@@ -51,17 +51,20 @@ def post_page(post_id):
 
 @app.route('/archive/')
 def archive_page():
-	posts = mongo.db.post.find().limit(100)
+	posts = mongo.db.post.find({'type':'published'}).limit(100).sort([('datetime',-1)])
 	return render_template('archive_page.html', posts=posts)
 
 @app.route('/admin/login/', methods=["GET", "POST"])
 def login_page():
 	if request.method == "POST":
-		if (request.form["username"] == settings.USERNAME) and (request.form["password"] == settings.PASSWORD):
-			session["username"] = request.form["username"]
-			return "success"
-		else:
-			return "fail"
+		try:
+			if (request.form["username"] == settings.USERNAME) and (request.form["password"] == settings.PASSWORD):
+				session["username"] = request.form["username"]
+				return "success"
+			else:
+				return "fail"
+		except KeyError:
+			return "bad request"
 	else: #TODO
 		return'''
 	        <form action="" method="post">
@@ -88,17 +91,14 @@ def article_edit_page(post_id=None):
 	if request.method == "POST":
 		if((not post_id) and ("post_id" in request.form) and (request.form["post_id"]!="")):
 			post_id = int(request.form["post_id"])
-		# try:
-			# if title != request.form['title'] and mongo.db.post.find({'title':request.form['title']}):
-			# 	return json.dumps({'type':'error', 'message':'标题重复了诶'})
-		if post_id:
-			mongo.db.post.update({'post_id':post_id}, {'post_id':post_id, 'title':request.form['title'], 'content':request.form['content'],'datetime': datetime.now()})
-		else:
-			post_id = mongo.db.counter.find_and_modify(update={"$inc":{"post_id":1}}, new=True).get("post_id")
-			mongo.db.post.save({'post_id':post_id, 'title':request.form['title'], 'content':request.form['content'],'datetime': datetime.now()})
-
-		# except Exception, e:
-		# 	raise e
+		try:
+			if post_id:
+				mongo.db.post.update({'post_id':post_id}, {"$set": {'post_id':post_id, 'title':request.form['title'], 'content':request.form['content'], 'type':request.form['type']}})
+			else:
+				post_id = mongo.db.counter.find_and_modify(update={"$inc":{"post_id":1}}, new=True).get("post_id")
+				mongo.db.post.save({'post_id':post_id, 'title':request.form['title'], 'content':request.form['content'], 'datetime': datetime.now(), 'type':request.form['type']})
+		except KeyError:
+			return json.dumps({'type':'fail', 'message':'KeyError'})
 		return json.dumps({'type':'success', 'post_id': post_id})
 	else:
 		if post_id:
